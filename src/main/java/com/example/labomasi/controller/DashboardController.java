@@ -1,10 +1,10 @@
 package com.example.labomasi.controller;
 
+import com.example.labomasi.service.MemberService;
+import com.example.labomasi.service.ProjectService;
+import com.example.labomasi.service.PublicationService;
+import com.example.labomasi.service.ResourceService;
 import com.example.labomasi.enums.ProjectStatus;
-import com.example.labomasi.repository.MemberRepository;
-import com.example.labomasi.repository.ProjectRepository;
-import com.example.labomasi.repository.PublicationRepository;
-import com.example.labomasi.repository.ResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,28 +17,24 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardController {
 
-    private final MemberRepository memberRepository;
-    private final ProjectRepository projectRepository;
-
-    // Make these optional - comment out if you don't have them yet
-    // private final PublicationRepository publicationRepository;
-    // private final ResourceRepository resourceRepository;
+    private final MemberService memberService;
+    private final ProjectService projectService;
+    private final PublicationService publicationService;
+    private final ResourceService resourceService;
 
     @GetMapping({"/", "/dashboard"})
     public String dashboard(Model model) {
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalProjects", projectRepository.count());
-        stats.put("activeProjects", projectRepository.countByStatus(ProjectStatus.IN_PROGRESS));
-        stats.put("totalMembers", memberRepository.count());
-
-        // Set to 0 if repositories don't exist yet
-        stats.put("totalPublications", 0L);
-        stats.put("publicationsThisYear", 0L);
-        stats.put("totalResources", 0L);
-        stats.put("availableResources", 0L);
+        stats.put("totalProjects", projectService.count());
+        stats.put("activeProjects", projectService.countByStatus(ProjectStatus.IN_PROGRESS));
+        stats.put("totalMembers", memberService.count());
+        stats.put("totalPublications", publicationService.count());
+        stats.put("publicationsThisYear", publicationService.countThisYear());
+        stats.put("totalResources", resourceService.count());
+        stats.put("availableResources", resourceService.countAvailable());
 
         model.addAttribute("stats", stats);
-        model.addAttribute("recentProjects", projectRepository.findTop5ByOrderByCreatedAtDesc());
+        model.addAttribute("recentProjects", projectService.findRecent());
 
         return "dashboard/index";
     }

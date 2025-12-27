@@ -5,6 +5,7 @@ import com.example.labomasi.enums.MemberRole;
 import com.example.labomasi.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,6 +37,7 @@ public class MemberController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {
         model.addAttribute("member", new Member());
         model.addAttribute("roles", MemberRole.values());
@@ -43,6 +45,7 @@ public class MemberController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @ModelAttribute Member member,
                          BindingResult result,
                          RedirectAttributes redirectAttributes,
@@ -64,9 +67,10 @@ public class MemberController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model) {
         memberService.findById(id).ifPresent(member -> {
-            member.setPassword(""); // Don't show password
+            member.setPassword("");
             model.addAttribute("member", member);
         });
         model.addAttribute("roles", MemberRole.values());
@@ -74,6 +78,7 @@ public class MemberController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute Member member,
                          BindingResult result,
@@ -90,6 +95,7 @@ public class MemberController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         memberService.delete(id);
         redirectAttributes.addFlashAttribute("success", "Member deleted successfully!");

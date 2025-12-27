@@ -67,4 +67,12 @@ public class PublicationService {
     public List<Publication> search(String keyword) {
         return publicationRepository.findByTitleContainingIgnoreCase(keyword);
     }
+
+    public List<Publication> findByAuthor(Long authorId) {
+        return publicationRepository.findByAuthorId(authorId);
+    }
+
+    public List<Publication> findByProject(Long projectId) {
+        return publicationRepository.findByProjectId(projectId);
+    }
 }

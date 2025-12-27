@@ -17,24 +17,60 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String adminEmail = "admin@ump.ac.ma"; // Use the SAME email for check and insert
-        
-        // Only create if NOT exists
-        if (!memberRepository.existsByEmail(adminEmail)) {
-            Member admin = Member.builder()
-                .firstName("Admin")
-                .lastName("User")
-                .email(adminEmail)  // Same email here
-                .password(passwordEncoder.encode("admin123"))
-                .role(MemberRole.ADMIN)
+        createUserIfNotExists(
+            "admin@ump.ac.ma",
+            "admin123",
+            "Admin",
+            "User",
+            MemberRole.ADMIN,
+            "Administration"
+        );
+
+        createUserIfNotExists(
+            "director@ump.ac.ma",
+            "director123",
+            "Lab",
+            "Director",
+            MemberRole.DIRECTOR,
+            "Laboratory Direction"
+        );
+
+        createUserIfNotExists(
+            "teacher@ump.ac.ma",
+            "teacher123",
+            "Teacher",
+            "User",
+            MemberRole.TEACHER,
+            "Computer Science"
+        );
+
+        createUserIfNotExists(
+            "doctorant@ump.ac.ma",
+            "doctorant123",
+            "PhD",
+            "Student",
+            MemberRole.DOCTORANT,
+            "Research"
+        );
+    }
+
+    private void createUserIfNotExists(String email, String password, String firstName,
+                                        String lastName, MemberRole role, String department) {
+        if (!memberRepository.existsByEmail(email)) {
+            Member member = Member.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(role)
                 .active(true)
-                .department("Administration")
+                .department(department)
                 .build();
-            
-            memberRepository.save(admin);
-            System.out.println("✅ Default admin created: " + adminEmail);
+
+            memberRepository.save(member);
+            System.out.println("Created default " + role.getDisplayName() + ": " + email);
         } else {
-            System.out.println("ℹ️ Admin already exists: " + adminEmail);
+            System.out.println(role.getDisplayName() + " already exists: " + email);
         }
     }
 }
