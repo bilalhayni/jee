@@ -2,6 +2,7 @@ package com.example.labomasi.service;
 
 import com.example.labomasi.entity.Project;
 import com.example.labomasi.enums.ProjectStatus;
+import com.example.labomasi.exception.ResourceNotFoundException;
 import com.example.labomasi.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ProjectService {
 
     public Project update(Long id, Project projectDetails) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project", id));
 
         project.setTitle(projectDetails.getTitle());
         project.setDescription(projectDetails.getDescription());

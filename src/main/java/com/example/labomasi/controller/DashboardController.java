@@ -39,12 +39,10 @@ public class DashboardController {
         }
 
         // Get the current user's role
-        CustomUserDetails userDetails = null;
         MemberRole userRole = null;
         Member currentMember = null;
 
-        if (auth.getPrincipal() instanceof CustomUserDetails) {
-            userDetails = (CustomUserDetails) auth.getPrincipal();
+        if (auth.getPrincipal() instanceof CustomUserDetails userDetails) {
             currentMember = userDetails.getMember();
             userRole = currentMember.getRole();
         }

@@ -1,6 +1,7 @@
 package com.example.labomasi.service;
 
 import com.example.labomasi.entity.Publication;
+import com.example.labomasi.exception.ResourceNotFoundException;
 import com.example.labomasi.repository.PublicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class PublicationService {
 
     public Publication update(Long id, Publication publicationDetails) {
         Publication publication = publicationRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new RuntimeException("Publication not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Publication", id));
 
         publication.setTitle(publicationDetails.getTitle());
         publication.setAbstractText(publicationDetails.getAbstractText());

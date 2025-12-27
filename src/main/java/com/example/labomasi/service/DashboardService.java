@@ -36,7 +36,7 @@ public class DashboardService {
                 .completedProjects(projectService.countByStatus(ProjectStatus.COMPLETED))
                 .plannedProjects(projectService.countByStatus(ProjectStatus.PLANNED))
                 .totalMembers(memberService.count())
-                .activeMembers(memberService.count())
+                .activeMembers(memberService.countActive())
                 .totalPublications(publicationService.count())
                 .publicationsThisYear(publicationService.countThisYear())
                 .totalResources(resourceService.count())

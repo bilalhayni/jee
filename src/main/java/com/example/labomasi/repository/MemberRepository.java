@@ -19,6 +19,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findByActiveTrue();
 
+    long countByActiveTrue();
+
     long countByRole(MemberRole role);
 
     List<Member> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
