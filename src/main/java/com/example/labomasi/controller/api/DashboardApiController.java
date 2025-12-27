@@ -1,15 +1,21 @@
-package com.example.labomasi.service;
+package com.example.labomasi.controller.api;
 
 import com.example.labomasi.dto.response.DashboardStats;
 import com.example.labomasi.enums.ProjectStatus;
 import com.example.labomasi.mapper.ProjectMapper;
 import com.example.labomasi.mapper.PublicationMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.example.labomasi.service.MemberService;
+import com.example.labomasi.service.ProjectService;
+import com.example.labomasi.service.PublicationService;
+import com.example.labomasi.service.ResourceService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Service
-@Transactional(readOnly = true)
-public class DashboardService {
+@RestController
+@RequestMapping("/api/dashboard")
+public class DashboardApiController {
 
     private final ProjectService projectService;
     private final MemberService memberService;
@@ -18,9 +24,9 @@ public class DashboardService {
     private final ProjectMapper projectMapper;
     private final PublicationMapper publicationMapper;
 
-    public DashboardService(ProjectService projectService, MemberService memberService,
-                            PublicationService publicationService, ResourceService resourceService,
-                            ProjectMapper projectMapper, PublicationMapper publicationMapper) {
+    public DashboardApiController(ProjectService projectService, MemberService memberService,
+                                  PublicationService publicationService, ResourceService resourceService,
+                                  ProjectMapper projectMapper, PublicationMapper publicationMapper) {
         this.projectService = projectService;
         this.memberService = memberService;
         this.publicationService = publicationService;
@@ -29,8 +35,9 @@ public class DashboardService {
         this.publicationMapper = publicationMapper;
     }
 
-    public DashboardStats getStats() {
-        return DashboardStats.builder()
+    @GetMapping
+    public ResponseEntity<DashboardStats> getDashboardStats() {
+        DashboardStats stats = DashboardStats.builder()
                 .totalProjects(projectService.count())
                 .activeProjects(projectService.countByStatus(ProjectStatus.IN_PROGRESS))
                 .completedProjects(projectService.countByStatus(ProjectStatus.COMPLETED))
@@ -44,5 +51,7 @@ public class DashboardService {
                 .recentProjects(projectMapper.toResponseList(projectService.findRecent()))
                 .recentPublications(publicationMapper.toResponseList(publicationService.findRecent()))
                 .build();
+
+        return ResponseEntity.ok(stats);
     }
 }
