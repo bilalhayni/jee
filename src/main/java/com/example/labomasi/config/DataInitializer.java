@@ -4,10 +4,12 @@ import com.example.labomasi.entity.Member;
 import com.example.labomasi.enums.MemberRole;
 import com.example.labomasi.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
@@ -68,9 +70,9 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
             memberRepository.save(member);
-            System.out.println("Created default " + role.getDisplayName() + ": " + email);
+            log.info("Created default {}: {}", role.getDisplayName(), email);
         } else {
-            System.out.println(role.getDisplayName() + " already exists: " + email);
+            log.debug("{} already exists: {}", role.getDisplayName(), email);
         }
     }
 }

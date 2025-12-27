@@ -2,6 +2,7 @@ package com.example.labomasi.service;
 
 import com.example.labomasi.entity.Member;
 import com.example.labomasi.enums.MemberRole;
+import com.example.labomasi.exception.ResourceNotFoundException;
 import com.example.labomasi.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +43,7 @@ public class MemberService {
 
     public Member update(Long id, Member memberDetails) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Member", id));
 
         member.setFirstName(memberDetails.getFirstName());
         member.setLastName(memberDetails.getLastName());
@@ -75,6 +76,14 @@ public class MemberService {
 
     public long count() {
         return memberRepository.count();
+    }
+
+    public long countActive() {
+        return memberRepository.countByActiveTrue();
+    }
+
+    public List<Member> findByActiveTrue() {
+        return memberRepository.findByActiveTrue();
     }
 
     public List<Member> search(String keyword) {
