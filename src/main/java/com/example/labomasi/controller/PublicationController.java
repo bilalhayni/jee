@@ -6,6 +6,7 @@ import com.example.labomasi.service.ProjectService;
 import com.example.labomasi.service.PublicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,6 +40,7 @@ public class PublicationController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR', 'TEACHER')")
     public String showCreateForm(Model model) {
         model.addAttribute("publication", new Publication());
         model.addAttribute("members", memberService.findAll());
@@ -47,6 +49,7 @@ public class PublicationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR', 'TEACHER')")
     public String create(@Valid @ModelAttribute Publication publication,
                          BindingResult result,
                          RedirectAttributes redirectAttributes,
@@ -63,6 +66,7 @@ public class PublicationController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR', 'TEACHER')")
     public String showEditForm(@PathVariable Long id, Model model) {
         publicationService.findById(id).ifPresent(pub -> model.addAttribute("publication", pub));
         model.addAttribute("members", memberService.findAll());
@@ -71,6 +75,7 @@ public class PublicationController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR', 'TEACHER')")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute Publication publication,
                          BindingResult result,
@@ -88,6 +93,7 @@ public class PublicationController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         publicationService.delete(id);
         redirectAttributes.addFlashAttribute("success", "Publication deleted successfully!");

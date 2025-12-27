@@ -5,6 +5,7 @@ import com.example.labomasi.enums.ResourceCategory;
 import com.example.labomasi.service.ResourceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,6 +37,7 @@ public class ResourceController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {
         model.addAttribute("resource", new Resource());
         model.addAttribute("categories", ResourceCategory.values());
@@ -43,6 +45,7 @@ public class ResourceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @ModelAttribute Resource resource,
                          BindingResult result,
                          RedirectAttributes redirectAttributes,
@@ -58,6 +61,7 @@ public class ResourceController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model) {
         resourceService.findById(id).ifPresent(resource -> model.addAttribute("resource", resource));
         model.addAttribute("categories", ResourceCategory.values());
@@ -65,6 +69,7 @@ public class ResourceController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute Resource resource,
                          BindingResult result,
@@ -81,6 +86,7 @@ public class ResourceController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         resourceService.delete(id);
         redirectAttributes.addFlashAttribute("success", "Resource deleted successfully!");

@@ -6,6 +6,7 @@ import com.example.labomasi.service.MemberService;
 import com.example.labomasi.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,6 +39,7 @@ public class ProjectController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR')")
     public String showCreateForm(Model model) {
         model.addAttribute("project", new Project());
         model.addAttribute("statuses", ProjectStatus.values());
@@ -46,6 +48,7 @@ public class ProjectController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR')")
     public String create(@Valid @ModelAttribute Project project,
                          BindingResult result,
                          RedirectAttributes redirectAttributes,
@@ -62,6 +65,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR')")
     public String showEditForm(@PathVariable Long id, Model model) {
         projectService.findById(id).ifPresent(project -> model.addAttribute("project", project));
         model.addAttribute("statuses", ProjectStatus.values());
@@ -70,6 +74,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTOR')")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute Project project,
                          BindingResult result,
@@ -87,6 +92,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         projectService.delete(id);
         redirectAttributes.addFlashAttribute("success", "Project deleted successfully!");
