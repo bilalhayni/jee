@@ -68,4 +68,8 @@ public class ProjectService {
     public List<Project> search(String keyword) {
         return projectRepository.findByTitleContainingIgnoreCase(keyword);
     }
+
+    public List<Project> findByMember(Long memberId) {
+        return projectRepository.findByMemberId(memberId);
+    }
 }
