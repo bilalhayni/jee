@@ -1,0 +1,70 @@
+<!-- src/main/resources/templates/layout/sidebar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<aside th:fragment="sidebar" class="w-64 h-screen fixed left-0 top-0 bg-white border-r border-gray-200 flex flex-col">
+    <!-- Logo -->
+    <div class="p-6 border-b border-gray-200">
+        <img th:src="@{/images/logo.png}" alt="Logo" class="h-10">
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="flex-1 p-4 space-y-1">
+        <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Main</p>
+        
+        <a th:href="@{/dashboard}" 
+           th:classappend="${#request.requestURI == '/dashboard' || #request.requestURI == '/'} ? 'active' : ''"
+           class="nav-item">
+            <i class="fas fa-th-large w-5"></i>
+            <span>Dashboard</span>
+        </a>
+        
+        <a th:href="@{/projects}" 
+           th:classappend="${#request.requestURI.startsWith('/projects')} ? 'active' : ''"
+           class="nav-item">
+            <i class="fas fa-folder w-5"></i>
+            <span>Projects</span>
+        </a>
+        
+        <a th:href="@{/publications}" 
+           th:classappend="${#request.requestURI.startsWith('/publications')} ? 'active' : ''"
+           class="nav-item">
+            <i class="fas fa-file-alt w-5"></i>
+            <span>Publications</span>
+        </a>
+        
+        <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2">Management</p>
+        
+        <a th:href="@{/members}" 
+           th:classappend="${#request.requestURI.startsWith('/members')} ? 'active' : ''"
+           class="nav-item">
+            <i class="fas fa-users w-5"></i>
+            <span>Members</span>
+        </a>
+        
+        <a th:href="@{/resources}" 
+           th:classappend="${#request.requestURI.startsWith('/resources')} ? 'active' : ''"
+           class="nav-item">
+            <i class="fas fa-cube w-5"></i>
+            <span>Resources</span>
+        </a>
+        
+        <!-- Admin Only -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2">Administration</p>
+            
+            <a th:href="@{/admin/users}" class="nav-item">
+                <i class="fas fa-user-cog w-5"></i>
+                <span>Users</span>
+            </a>
+            
+            <!-- <a th:href="@{/admin/settings}" class="nav-item">
+                <i class="fas fa-cog w-5"></i>
+                <span>Settings</span>
+            </a> -->
+        </div>
+    </nav>
+</aside>
+</body>
+</html>

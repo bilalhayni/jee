@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<th:block th:fragment="content">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-gray-900">Members</h2>
+            <p class="text-gray-500 text-sm">Manage laboratory members</p>
+        </div>
+        <a th:href="@{/members/new}" class="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2">
+            <i class="fas fa-plus"></i> Add Member
+        </a>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+        <form th:action="@{/members}" method="get" class="flex gap-4">
+            <div class="flex-1">
+                <input type="text" name="search" th:value="${search}" placeholder="Search by name..."
+                       class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200">
+            </div>
+            <button type="submit" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <a th:href="@{/members}" class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">Clear</a>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+            <tr>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Member</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Email</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Role</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+            <tr th:each="member : ${members}" class="hover:bg-gray-50">
+                <td class="px-5 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-semibold text-gray-600"
+                             th:text="${member.initials}">AB</div>
+                        <div>
+                            <div class="font-medium text-gray-900" th:text="${member.fullName}">Name</div>
+                            <div class="text-sm text-gray-500" th:text="${member.specialization}">Specialization</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-5 py-4 text-gray-600" th:text="${member.email}">email@example.com</td>
+                <td class="px-5 py-4">
+                        <span class="px-2.5 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700"
+                              th:text="${member.role.displayName}">Role</span>
+                </td>
+                <td class="px-5 py-4 text-gray-600" th:text="${member.department}">Department</td>
+                <td class="px-5 py-4">
+                    <span th:if="${member.active}" class="px-2.5 py-1 rounded text-xs font-medium bg-green-50 text-green-700">Active</span>
+                    <span th:unless="${member.active}" class="px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700">Inactive</span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                    <div class="flex justify-end gap-2">
+                        <a th:href="@{/members/{id}/edit(id=${member.id})}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form th:action="@{/members/{id}/delete(id=${member.id})}" method="post"
+                              onsubmit="return confirm('Are you sure you want to delete this member?');">
+                            <button type="submit" class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(members)}">
+                <td colspan="6" class="px-5 py-8 text-center text-gray-500">
+                    No members found. <a th:href="@{/members/new}" class="text-gray-900 underline">Add one</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</html>
