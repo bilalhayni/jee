@@ -21,7 +21,7 @@ public class PublicationService {
     }
 
     public Optional<Publication> findById(Long id) {
-        return publicationRepository.findById(id);
+        return publicationRepository.findByIdWithDetails(id);
     }
 
     public Publication save(Publication publication) {
@@ -29,7 +29,7 @@ public class PublicationService {
     }
 
     public Publication update(Long id, Publication publicationDetails) {
-        Publication publication = publicationRepository.findById(id)
+        Publication publication = publicationRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new RuntimeException("Publication not found"));
 
         publication.setTitle(publicationDetails.getTitle());
