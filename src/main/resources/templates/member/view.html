@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<th:block th:fragment="content">
+    <div class="max-w-4xl">
+        <!-- Header -->
+        <div class="mb-6">
+            <a th:href="@{/members}" class="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-flex items-center gap-1">
+                <i class="fas fa-arrow-left"></i> Back to Members
+            </a>
+            <div class="flex justify-between items-start">
+                <h2 class="text-xl font-bold text-gray-900">Member Details</h2>
+                <div class="flex gap-2">
+                    <a th:href="@{/members/{id}/edit(id=${member.id})}" class="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Profile Card -->
+        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6">
+            <div class="bg-gray-50 px-6 py-8 border-b border-gray-200">
+                <div class="flex items-center gap-6">
+                    <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-3xl font-bold text-gray-600"
+                         th:text="${member.initials}">AB</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900" th:text="${member.fullName}">Full Name</h3>
+                        <div class="flex items-center gap-3 mt-2">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-gray-700"
+                                  th:text="${member.role.displayName}">Role</span>
+                            <span th:if="${member.active}" class="px-3 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700">Active</span>
+                            <span th:unless="${member.active}" class="px-3 py-1 rounded-full text-sm font-medium bg-red-50 text-red-700">Inactive</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Contact Information -->
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Contact Information</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                    <i class="fas fa-envelope text-gray-500"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Email</div>
+                                    <div class="text-gray-900" th:text="${member.email}">email@example.com</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                    <i class="fas fa-phone text-gray-500"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Phone</div>
+                                    <div class="text-gray-900" th:text="${member.phone} ?: 'Not provided'">Phone</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information -->
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Professional Information</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                    <i class="fas fa-building text-gray-500"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Department</div>
+                                    <div class="text-gray-900" th:text="${member.department} ?: 'Not assigned'">Department</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                    <i class="fas fa-flask text-gray-500"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Specialization</div>
+                                    <div class="text-gray-900" th:text="${member.specialization} ?: 'Not specified'">Specialization</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Projects -->
+        <div class="bg-white border border-gray-200 rounded-lg mb-6" th:if="${projects != null and !projects.isEmpty()}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Projects</h4>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div th:each="project : ${projects}" class="px-6 py-4 flex justify-between items-center hover:bg-gray-50">
+                    <div>
+                        <a th:href="@{/projects/{id}(id=${project.id})}" class="font-medium text-gray-900 hover:underline" th:text="${project.title}">Project</a>
+                        <div class="text-sm text-gray-500" th:text="${project.description} != null ? ${#strings.abbreviate(project.description, 50)} : 'No description'">Description</div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded text-xs font-medium"
+                          th:classappend="${project.status.name() == 'IN_PROGRESS'} ? 'bg-green-50 text-green-600' : 
+                                         (${project.status.name() == 'COMPLETED'} ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600')"
+                          th:text="${project.status.displayName}">Status</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Publications -->
+        <div class="bg-white border border-gray-200 rounded-lg" th:if="${publications != null and !publications.isEmpty()}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Publications</h4>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div th:each="pub : ${publications}" class="px-6 py-4 hover:bg-gray-50">
+                    <a th:href="@{/publications/{id}(id=${pub.id})}" class="font-medium text-gray-900 hover:underline" th:text="${pub.title}">Publication</a>
+                    <div class="text-sm text-gray-500" th:text="${pub.journal} ?: ${pub.conference}">Journal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Information -->
+        <div class="bg-white border border-gray-200 rounded-lg mt-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Account Information</h4>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500">Created:</span>
+                        <span class="text-gray-900 ml-2" th:text="${member.createdAt} != null ? ${#temporals.format(member.createdAt, 'dd MMM yyyy HH:mm')} : 'N/A'">Date</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Last Updated:</span>
+                        <span class="text-gray-900 ml-2" th:text="${member.updatedAt} != null ? ${#temporals.format(member.updatedAt, 'dd MMM yyyy HH:mm')} : 'N/A'">Date</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

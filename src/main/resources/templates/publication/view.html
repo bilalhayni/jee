@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<th:block th:fragment="content">
+    <div class="max-w-4xl">
+        <!-- Header -->
+        <div class="mb-6">
+            <a th:href="@{/publications}" class="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-flex items-center gap-1">
+                <i class="fas fa-arrow-left"></i> Back to Publications
+            </a>
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold text-gray-900" th:text="${publication.title}">Publication Title</h2>
+                    <div class="flex items-center gap-3 mt-2">
+                        <span th:if="${publication.publicationType}" class="px-3 py-1 rounded-full text-sm font-medium bg-purple-50 text-purple-700"
+                              th:text="${publication.publicationType}">Type</span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a th:href="@{/publications/{id}/edit(id=${publication.id})}" class="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Publication Details Card -->
+        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <!-- Authors -->
+                <div class="mb-6" th:if="${publication.authors}">
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Authors</h4>
+                    <p class="text-gray-700" th:text="${publication.authors}">Authors list</p>
+                </div>
+
+                <!-- Abstract -->
+                <div class="mb-6" th:if="${publication.abstractText}">
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Abstract</h4>
+                    <p class="text-gray-700 leading-relaxed" th:text="${publication.abstractText}">Abstract text</p>
+                </div>
+
+                <!-- Publication Details Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div th:if="${publication.journal}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-book text-gray-500"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Journal</div>
+                                <div class="text-gray-900 font-medium" th:text="${publication.journal}">Journal Name</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${publication.conference}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-users text-gray-500"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Conference</div>
+                                <div class="text-gray-900 font-medium" th:text="${publication.conference}">Conference Name</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${publication.publicationDate}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-calendar text-gray-500"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Publication Date</div>
+                                <div class="text-gray-900 font-medium" th:text="${#temporals.format(publication.publicationDate, 'dd MMM yyyy')}">Date</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${publication.citations != null}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-quote-right text-gray-500"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Citations</div>
+                                <div class="text-gray-900 font-medium" th:text="${publication.citations}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOI and URL -->
+        <div class="bg-white border border-gray-200 rounded-lg mb-6" th:if="${publication.doi != null or publication.url != null}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Links</h4>
+            </div>
+            <div class="p-6 space-y-4">
+                <div th:if="${publication.doi}" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-fingerprint text-blue-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">DOI</div>
+                        <a th:href="'https://doi.org/' + ${publication.doi}" target="_blank" class="text-blue-600 hover:underline" th:text="${publication.doi}">DOI</a>
+                    </div>
+                </div>
+                <div th:if="${publication.url}" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                        <i class="fas fa-external-link-alt text-green-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">External URL</div>
+                        <a th:href="${publication.url}" target="_blank" class="text-blue-600 hover:underline" th:text="${publication.url}">URL</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Author Details -->
+        <div class="bg-white border border-gray-200 rounded-lg mb-6" th:if="${publication.author}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Primary Author</h4>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600"
+                         th:text="${publication.author.initials}">AB</div>
+                    <div>
+                        <a th:href="@{/members/{id}(id=${publication.author.id})}" class="font-medium text-gray-900 hover:underline" th:text="${publication.author.fullName}">Name</a>
+                        <div class="text-sm text-gray-500" th:text="${publication.author.email}">email@example.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Project -->
+        <div class="bg-white border border-gray-200 rounded-lg mb-6" th:if="${publication.project}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Related Project</h4>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <a th:href="@{/projects/{id}(id=${publication.project.id})}" class="font-medium text-gray-900 hover:underline" th:text="${publication.project.title}">Project</a>
+                        <div class="text-sm text-gray-500" th:text="${publication.project.description} != null ? ${#strings.abbreviate(publication.project.description, 80)} : 'No description'">Description</div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded text-xs font-medium"
+                          th:classappend="${publication.project.status.name() == 'IN_PROGRESS'} ? 'bg-green-50 text-green-600' : 
+                                         (${publication.project.status.name() == 'COMPLETED'} ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600')"
+                          th:text="${publication.project.status.displayName}">Status</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timestamps -->
+        <div class="bg-white border border-gray-200 rounded-lg">
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500">Created:</span>
+                        <span class="text-gray-900 ml-2" th:text="${publication.createdAt} != null ? ${#temporals.format(publication.createdAt, 'dd MMM yyyy HH:mm')} : 'N/A'">Date</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Last Updated:</span>
+                        <span class="text-gray-900 ml-2" th:text="${publication.updatedAt} != null ? ${#temporals.format(publication.updatedAt, 'dd MMM yyyy HH:mm')} : 'N/A'">Date</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

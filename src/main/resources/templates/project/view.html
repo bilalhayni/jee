@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<th:block th:fragment="content">
+    <div class="max-w-4xl">
+        <!-- Header -->
+        <div class="mb-6">
+            <a th:href="@{/projects}" class="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-flex items-center gap-1">
+                <i class="fas fa-arrow-left"></i> Back to Projects
+            </a>
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900" th:text="${project.title}">Project Title</h2>
+                    <div class="flex items-center gap-3 mt-2">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium"
+                              th:classappend="${project.status.name() == 'IN_PROGRESS'} ? 'bg-green-50 text-green-600' : 
+                                             (${project.status.name() == 'COMPLETED'} ? 'bg-blue-50 text-blue-600' : 
+                                             (${project.status.name() == 'ON_HOLD'} ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-100 text-gray-600'))"
+                              th:text="${project.status.displayName}">Status</span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a th:href="@{/projects/{id}/edit(id=${project.id})}" class="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Overview Card -->
+        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <!-- Description -->
+                <div class="mb-6" th:if="${project.description}">
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Description</h4>
+                    <p class="text-gray-700" th:text="${project.description}">Project description</p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Progress</h4>
+                        <span class="text-sm font-medium text-gray-900" th:text="${project.progress} + '%'">0%</span>
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-gray-900 rounded-full transition-all" th:style="'width:' + ${project.progress} + '%'"></div>
+                    </div>
+                </div>
+
+                <!-- Project Details Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <div class="text-xs text-gray-500 mb-1">Start Date</div>
+                        <div class="text-gray-900 font-medium" th:text="${project.startDate} != null ? ${#temporals.format(project.startDate, 'dd MMM yyyy')} : 'Not set'">Date</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 mb-1">End Date</div>
+                        <div class="text-gray-900 font-medium" th:text="${project.endDate} != null ? ${#temporals.format(project.endDate, 'dd MMM yyyy')} : 'Not set'">Date</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 mb-1">Budget</div>
+                        <div class="text-gray-900 font-medium" th:text="${project.budget} ?: 'Not specified'">Budget</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 mb-1">Funding Source</div>
+                        <div class="text-gray-900 font-medium" th:text="${project.fundingSource} ?: 'Not specified'">Source</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Lead -->
+        <div class="bg-white border border-gray-200 rounded-lg mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Project Lead</h4>
+            </div>
+            <div class="p-6">
+                <div th:if="${project.lead}" class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600"
+                         th:text="${project.lead.initials}">AB</div>
+                    <div>
+                        <a th:href="@{/members/{id}(id=${project.lead.id})}" class="font-medium text-gray-900 hover:underline" th:text="${project.lead.fullName}">Name</a>
+                        <div class="text-sm text-gray-500" th:text="${project.lead.email}">email@example.com</div>
+                    </div>
+                </div>
+                <div th:unless="${project.lead}" class="text-gray-500">No lead assigned</div>
+            </div>
+        </div>
+
+        <!-- Team Members -->
+        <div class="bg-white border border-gray-200 rounded-lg mb-6">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h4 class="font-semibold text-gray-900">Team Members</h4>
+                <span class="text-sm text-gray-500" th:text="${project.members.size()} + ' members'">0 members</span>
+            </div>
+            <div th:if="${project.members != null and !project.members.isEmpty()}" class="divide-y divide-gray-100">
+                <div th:each="member : ${project.members}" class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-semibold text-gray-600"
+                             th:text="${member.initials}">AB</div>
+                        <div>
+                            <a th:href="@{/members/{id}(id=${member.id})}" class="font-medium text-gray-900 hover:underline" th:text="${member.fullName}">Name</a>
+                            <div class="text-sm text-gray-500" th:text="${member.role.displayName}">Role</div>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500" th:text="${member.email}">email@example.com</span>
+                </div>
+            </div>
+            <div th:if="${project.members == null or project.members.isEmpty()}" class="p-6 text-center text-gray-500">
+                No team members assigned
+            </div>
+        </div>
+
+        <!-- Related Publications -->
+        <div class="bg-white border border-gray-200 rounded-lg" th:if="${publications != null and !publications.isEmpty()}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-900">Related Publications</h4>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div th:each="pub : ${publications}" class="px-6 py-4 hover:bg-gray-50">
+                    <a th:href="@{/publications/{id}(id=${pub.id})}" class="font-medium text-gray-900 hover:underline" th:text="${pub.title}">Publication</a>
+                    <div class="text-sm text-gray-500 mt-1">
+                        <span th:text="${pub.authors}">Authors</span>
+                        <span th:if="${pub.journal}"> - <span th:text="${pub.journal}">Journal</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timestamps -->
+        <div class="bg-white border border-gray-200 rounded-lg mt-6">
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500">Created:</span>
+                        <span class="text-gray-900 ml-2" th:text="${project.createdAt} != null ? ${#temporals.format(project.createdAt, 'dd MMM yyyy HH:mm')} : 'N/A'">Date</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Last Updated:</span>
+                        <span class="text-gray-900 ml-2" th:text="${project.updatedAt} != null ? ${#temporals.format(project.updatedAt, 'dd MMM yyyy HH:mm')} : 'N/A'">Date</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

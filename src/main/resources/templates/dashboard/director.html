@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<th:block th:fragment="content">
+    <!-- Director Dashboard Header -->
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Director Dashboard</h2>
+        <p class="text-gray-500 text-sm">Laboratory oversight and management</p>
+    </div>
+
+    <!-- Director Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
+        <!-- Research Team -->
+        <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-sm font-medium text-gray-500">Research Team</span>
+                <div class="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center text-blue-500">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-1.5" th:text="${stats?.totalMembers} ?: 0">0</div>
+            <div class="text-xs text-gray-500">team members</div>
+        </div>
+
+        <!-- Active Research -->
+        <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-sm font-medium text-gray-500">Active Research</span>
+                <div class="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center text-green-500">
+                    <i class="fas fa-flask"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-1.5" th:text="${stats?.activeProjects} ?: 0">0</div>
+            <div class="text-xs text-green-600">ongoing projects</div>
+        </div>
+
+        <!-- Publications -->
+        <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-sm font-medium text-gray-500">Publications</span>
+                <div class="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center text-purple-500">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-1.5" th:text="${stats?.totalPublications} ?: 0">0</div>
+            <div class="text-xs text-gray-500">
+                <span th:text="${stats?.publicationsThisYear} ?: 0">0</span> this year
+            </div>
+        </div>
+
+        <!-- Lab Resources -->
+        <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <div class="flex justify-between items-start mb-3">
+                <span class="text-sm font-medium text-gray-500">Lab Resources</span>
+                <div class="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center text-orange-500">
+                    <i class="fas fa-microscope"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-1.5" th:text="${stats?.availableResources} ?: 0">0</div>
+            <div class="text-xs text-gray-500">available</div>
+        </div>
+    </div>
+
+    <!-- Director Content -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Project Overview -->
+        <div class="xl:col-span-2 bg-white border border-gray-200 rounded-lg">
+            <div class="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="font-semibold text-gray-900">Project Overview</h3>
+                <a th:href="@{/projects}" class="text-sm text-gray-500 hover:text-gray-700">View All</a>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <div class="text-2xl font-bold text-gray-900" th:text="${stats?.plannedProjects} ?: 0">0</div>
+                        <div class="text-xs text-gray-500 mt-1">Planned</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600" th:text="${stats?.activeProjects} ?: 0">0</div>
+                        <div class="text-xs text-gray-500 mt-1">In Progress</div>
+                    </div>
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600" th:text="${stats?.completedProjects} ?: 0">0</div>
+                        <div class="text-xs text-gray-500 mt-1">Completed</div>
+                    </div>
+                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-600" th:text="${stats?.onHoldProjects} ?: 0">0</div>
+                        <div class="text-xs text-gray-500 mt-1">On Hold</div>
+                    </div>
+                </div>
+
+                <div th:if="${recentProjects != null and !recentProjects.isEmpty()}">
+                    <h4 class="font-medium text-gray-900 mb-3">Recent Projects</h4>
+                    <div class="space-y-3">
+                        <div th:each="project : ${recentProjects}" class="flex items-center justify-between p-3 border border-gray-100 rounded-lg">
+                            <div>
+                                <a th:href="@{/projects/{id}(id=${project.id})}" class="font-medium text-gray-900 hover:underline" th:text="${project.title}">Project</a>
+                                <div class="text-xs text-gray-500" th:text="${project.lead?.fullName} ?: 'No lead assigned'">Lead</div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-medium"
+                                  th:classappend="${project.status.name() == 'IN_PROGRESS'} ? 'bg-green-50 text-green-600' : 
+                                                 (${project.status.name() == 'COMPLETED'} ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600')"
+                                  th:text="${project.status.displayName}">Status</span>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${recentProjects == null or recentProjects.isEmpty()}" class="text-center py-8 text-gray-500">
+                    No projects found. <a th:href="@{/projects/new}" class="text-gray-900 underline">Create one</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Director Quick Actions -->
+        <div class="bg-white border border-gray-200 rounded-lg">
+            <div class="px-5 py-4 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-900">Quick Actions</h3>
+            </div>
+            <div class="p-5">
+                <div class="space-y-3">
+                    <a th:href="@{/projects/new}" class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                            <i class="fas fa-folder-plus text-green-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">New Project</div>
+                            <div class="text-xs text-gray-500">Start research project</div>
+                        </div>
+                    </a>
+                    <a th:href="@{/publications/new}" class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                            <i class="fas fa-file-medical text-purple-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">Add Publication</div>
+                            <div class="text-xs text-gray-500">Register new paper</div>
+                        </div>
+                    </a>
+                    <a th:href="@{/members}" class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-users text-blue-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">View Team</div>
+                            <div class="text-xs text-gray-500">Manage team members</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>
