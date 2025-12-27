@@ -22,9 +22,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/images/**", "/css/**", "/js/**", "/static/**").permitAll()
                         .requestMatchers("/login", "/register").permitAll()
+                        .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -41,7 +45,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .accessDeniedPage("/access-denied")
-                );
+                )
+                .httpBasic(basic -> {});
 
         return http.build();
     }
