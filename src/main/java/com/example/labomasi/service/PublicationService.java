@@ -64,6 +64,11 @@ public class PublicationService {
         return publicationRepository.findTop5ByOrderByPublicationDateDesc();
     }
 
+    public List<Publication> findRecent(int limit) {
+        List<Publication> all = publicationRepository.findAllByOrderByPublicationDateDesc();
+        return all.size() > limit ? all.subList(0, limit) : all;
+    }
+
     public List<Publication> search(String keyword) {
         return publicationRepository.findByTitleContainingIgnoreCase(keyword);
     }
