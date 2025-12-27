@@ -22,7 +22,7 @@ public class ProjectService {
     }
 
     public Optional<Project> findById(Long id) {
-        return projectRepository.findById(id);
+        return projectRepository.findByIdWithDetails(id);
     }
 
     public Project save(Project project) {
